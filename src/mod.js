@@ -30,7 +30,7 @@ export function facebookInstantPlugin() {
 		 * @param {Object} options
 		 * @param {string} options.placementId
 		 */
-		async showFullScreenAd({placementId}) {
+		async showFullScreenAd({ placementId }) {
 			const ad = await FBInstant.getInterstitialAdAsync(placementId);
 			try {
 				await ad.loadAsync();
