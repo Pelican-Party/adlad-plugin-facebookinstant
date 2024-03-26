@@ -23,4 +23,16 @@ declare class FBInstant {
 	 * @param placementID The placement ID that's been setup in your Audience Network settings.
 	 */
 	static getInterstitialAdAsync(placementID: string): Promise<AdInstance>;
+
+	/**
+	 * Attempt to create an instance of rewarded video. This instance can then be preloaded and presented.
+	 * @param placementID The placement ID that's been setup in your Audience Network settings.
+	 */
+	static getRewardedVideoAsync(placementID: string): Promise<AdInstance>;
+
+	/**
+	 * Attempt to create an instance of rewarded interstitial. This instance can then be preloaded and presented.
+	 * @param placementID The placement ID that's been setup in your Audience Network settings.
+	 */
+	static getRewardedInterstitialAsync(placementID: string): Promise<AdInstance>;
 }
