@@ -1,6 +1,6 @@
 {
 	"name": "@adlad/plugin-facebookinstant",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "AdLad plugin for the Facebook Instant Games sdk.",
 	"main": "mod.js",
 	"types": "dist/adlad-plugin-facebookinstant.d.ts",
