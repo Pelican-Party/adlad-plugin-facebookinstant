@@ -26,10 +26,12 @@ export function facebookInstantPlugin() {
 			loadStopCalled = true;
 			await FBInstant.startGameAsync();
 		},
-		async showFullScreenAd() {
-			const ad = await FBInstant.getInterstitialAdAsync(
-				"CAROUSEL_IMG_SQUARE_APP_INSTALL#497152094416911_1572665733532203",
-			);
+		/**
+		 * @param {Object} options
+		 * @param {string} options.placementId
+		 */
+		async showFullScreenAd({placementId}) {
+			const ad = await FBInstant.getInterstitialAdAsync(placementId);
 			try {
 				await ad.loadAsync();
 				await ad.showAsync();
