@@ -3,10 +3,41 @@ export function facebookInstantPlugin() {
 	let loadStartCalled = false;
 	let loadStopCalled = false;
 
+	/** @typedef {"interstitial" | "rewarded-interstitial" | "rewarded-video"} ShowAdType */
+
+	/** @type {Map<string, Promise<AdInstance>>} */
+	const cachedAdInstances = new Map();
+
 	/**
-	 * @param {AdInstance} ad
+	 * Creates and caches an ad instance.
+	 * Subsequent calls will result in the same instance.
+	 * @param {ShowAdType} type
+	 * @param {string} placementId
 	 */
-	async function showAd(ad) {
+	function getAdInstance(type, placementId) {
+		const key = type + "-" + placementId;
+		const existing = cachedAdInstances.get(key);
+		if (existing) return existing;
+		let ad;
+		if (type == "interstitial") {
+			ad = FBInstant.getInterstitialAdAsync(placementId);
+		} else if (type == "rewarded-interstitial") {
+			ad = FBInstant.getRewardedInterstitialAsync(placementId);
+		} else if (type == "rewarded-video") {
+			ad = FBInstant.getRewardedVideoAsync(placementId);
+		} else {
+			throw new Error("unknown ad type");
+		}
+		cachedAdInstances.set(key, ad);
+		return ad;
+	}
+
+	/**
+	 * @param {"interstitial" | "rewarded-interstitial" | "rewarded-video"} type
+	 * @param {string} placementId
+	 */
+	async function showAd(type, placementId) {
+		const ad = await getAdInstance(type, placementId);
 		try {
 			await ad.loadAsync();
 			await ad.showAsync();
@@ -65,8 +96,7 @@ export function facebookInstantPlugin() {
 		 * @param {string} options.placementId
 		 */
 		async showFullScreenAd({ placementId }) {
-			const ad = await FBInstant.getInterstitialAdAsync(placementId);
-			return await showAd(ad);
+			return await showAd("interstitial", placementId);
 		},
 		/**
 		 * @param {Object} options
@@ -74,15 +104,16 @@ export function facebookInstantPlugin() {
 		 * @param {string} options.placementId
 		 */
 		async showRewardedAd({ type, placementId }) {
-			let ad;
+			/** @type {ShowAdType} */
+			let showAdType;
 			if (type == "interstitial") {
-				ad = await FBInstant.getRewardedInterstitialAsync(placementId);
+				showAdType = "rewarded-interstitial";
 			} else if (type == "video") {
-				ad = await FBInstant.getRewardedVideoAsync(placementId);
+				showAdType = "rewarded-video";
 			} else {
 				throw new Error("Unknown ad type");
 			}
-			return await showAd(ad);
+			return await showAd(showAdType, placementId);
 		},
 	});
 
